@@ -3,7 +3,7 @@
 
 It's my first game in Web Development course at Iron Hack.
 
-The game is based in endure race from Atari with some hot changes that everybody will love.
+The game is based in enduro race from Atari with some hot changes that everybody will love.
 
 
 ## Tech
