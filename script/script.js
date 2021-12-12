@@ -5,17 +5,55 @@ window.onload = () => {
         constructor() {
             this.canvas = document.getElementById('canvas');
             this.context = this.canvas.getContext('2d');
-            this.cars = [];
+            this.obstacles = [];
             this.frames = 0;
             this.points = 0;
+            this.gameStarted = false;
+            this.refillGas = []; // variavel para gerar refil de gasolina randomicamente
         };
-    }
-    const gameArea = GameArea();
+
+      start = () => {
+        this.gameStarted = true;
+        this.intervalID = setInterval(updateGameArea, 20);
+      };
+      
+      stop = () => {
+        clearInterval(this.intervalID)
+        this.gameOver();
+      };
+
+      clear = () => {
+        this.context.clearRect(0,0, this.canvas.width, this.canvas.height);
+      };
+
+      score = () => {
+        this.context.fillStyle = "white";
+        this.context.font = "bold 30px courier";
+        this.context.fillText(`Score: ${this.points}`,65, 65);
+        this.context.strokeStyle = 'black';
+        this.context.fillText(`Score: ${this.points}`,65, 65);
+      };
+      
+      gameOver = () => {
+        this.clear();
+        this.context.fillStyle = 'black';
+        this.context.fillRect(0, 0, this.canvas.width, this.canvas.height)
+        this.context.fillStyle = 'red';
+        this.context.textAlign = 'center';
+        this.context.font = 'bold 60px courier';
+        this.context.fillText('GAME OVER', 450, 250);
+        this.context.fillStyle = 'white';
+        this.context.font = 'bold 40px courier';
+        this.context.fillText(`Score: ${this.points}`, 450, 350)
+      };
+    };
+
+    const gameArea = new GameArea();
 
     class Background {
         constructor() {
           this.img = new Image();
-          this.img.src = "IMG ADDRESS";
+          this.img.src = "./images/road.png";
         }
     
         draw = () => {
@@ -38,8 +76,9 @@ window.onload = () => {
           this.width = width;
           this.height = height;
           this.img = new Image();
-          this.img.src = "CAR ADDRESS";
+          this.img.src = "./images/lamboCar.png";
           this.speed = 8;
+          //this.fuel = 10; // fueel variable to use in the future
         }
     
         draw = () => {
@@ -64,7 +103,7 @@ window.onload = () => {
                 this.posX += this.speed;
               }
               break;
-          }
+          };
         };
     
         top = () => {
@@ -76,11 +115,11 @@ window.onload = () => {
         }
     
         left = () => {
-          return this.posx;
+          return this.posX;
         }
     
         right = () => {
-          return this.posx + this.width;
+          return this.posX + this.width;
         }
     
         crashWith = (obstacle) => {
@@ -92,7 +131,7 @@ window.onload = () => {
         };
       }
 
-      const player1 = new Car(220, 550, 60, 120);
+      const player1 = new Car(420, 400, 60, 120);
 
       class Obstacle {
         constructor(x, width, color) {
@@ -136,13 +175,55 @@ window.onload = () => {
       }
 
       function updateGameArea() {
-       
+        gameArea.clear();
+        background.draw();
+        player1.draw();
+        updateObstacles();
+        gameArea.score();
+        checkGameOver();
       }
     
+      function createObstacle() {
+        const minX = 60;
+        const maxX = gameArea.canvas.width - 60;
+        const minWidth = 120;
+        const maxWidth = 260;
+        const posX = Math.floor(Math.random() * (maxX - minX + 1) + minX);
+        const width = Math.floor(Math.random() * (maxWidth - minWidth + 1) + minWidth);
+        const obs = new Obstacle(posX, width, 'red');
+        gameArea.obstacles.push(obs);
+      }
+      function updateObstacles() {
+        gameArea.frames += 1;
+        if (!(gameArea.frames % 120)) {
+          createObstacle();
+        }
 
-
+        gameArea.obstacles.forEach((obstacle, index) => {
+          obstacle.updatePos();
+          obstacle.draw();
+          if (obstacle.posY > gameArea.canvas.height) {
+            gameArea.obstacles.splice(index, 1);
+            gameArea.points += 1;
+          }
+        });
+      }
+    
+      function checkGameOver () {
+        gameArea.obstacles.forEach((obstacle) => {
+          const crashed = player1.crashWith(obstacle);
+          if (crashed) {
+            gameArea.stop();
+          }
+        })
+      }
+    
     document.getElementById('start-button').onclick = () => {
-
+      if (!gameArea.gameStarted) {
+        gameArea.start();
+      }
     };
-
+    document.addEventListener('keydown', (e) => {
+      player1.move(e.key);
+    });
 };
