@@ -68,6 +68,14 @@ window.onload = () => {
     constructor() {
       this.img = new Image();
       this.img.src = "./images/road.png";
+      this.speed = 5;
+      this.y = 0;
+           
+    }
+
+    move = () => {
+      this.y += this.speed;
+      this.y %= gameArea.canvas.height;
     }
 
     draw = () => {
@@ -78,8 +86,18 @@ window.onload = () => {
         gameArea.canvas.width,
         gameArea.canvas.height
       );
-    };
-  }
+      gameArea.context.drawImage(this.img, 0, this.y);
+      if (this.speed > 0)  {
+        gameArea.context.drawImage(this.img, 0, this.y - background.height);
+      }
+  };
+}
+
+function updateBackgroundCanvas() {
+  background.move();
+  gameArea.clear();
+  background.draw();
+ }
 
   const background = new Background();
 
@@ -210,8 +228,9 @@ window.onload = () => {
     player1.reset();
   }
   function updateGameArea() {
-    gameArea.clear();
-    background.draw();
+    //gameArea.clear();
+    //background.draw();
+    updateBackgroundCanvas();
     updateObstacles();
     player1.draw();
     gameArea.score();
