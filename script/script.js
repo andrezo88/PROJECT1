@@ -70,7 +70,6 @@ window.onload = () => {
       this.img.src = "./images/road.png";
       this.speed = 5;
       this.y = 0;
-           
     }
 
     move = () => {
@@ -86,12 +85,9 @@ window.onload = () => {
         gameArea.canvas.width,
         gameArea.canvas.height
       );
-      gameArea.context.drawImage(this.img, 0, this.y);
-      if (this.speed > 0)  {
-        gameArea.context.drawImage(this.img, 0, this.y - background.height);
-      }
-  };
-}
+      gameArea.context.drawImage(this.img, 0, this.y, gameArea.canvas.width, gameArea.canvas.height);
+    };
+  }
 
 function updateBackgroundCanvas() {
   background.move();
