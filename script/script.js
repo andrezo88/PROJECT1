@@ -143,16 +143,6 @@ function updateBackgroundCanvas() {
             this.posX += this.speed;
           }
           break;
-        case "ArrowUp":
-          if (this.posY > 5) {
-            this.posY -= this.speed;
-          }
-          break;
-        case "ArrowDown":
-          if (this.posX < gameArea.canvas.height - 5 - this.height) {
-            this.posY += this.speed;
-          }
-          break;
       };
     };
 
