@@ -185,7 +185,7 @@ window.onload = () => {
       this.height = 120;
       this.speed = speed;
       this.img = new Image();
-      this.cars = ["./images/f1Car.png", "./images/yellowCar.png", "./images/grayCar.png", "./images/grayCar.png", "./images/lamboCar.png"]
+      this.cars = ["./images/f1Car.png", "./images/yellowCar.png", "./images/grayCar.png", "./images/graycar.png", "./images/lamboCar.png"]
       this.img.src = this.cars[Math.floor(Math.random() * this.cars.length)];
     }
 
