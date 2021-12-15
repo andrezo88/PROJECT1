@@ -11,6 +11,7 @@ window.onload = () => {
       this.gameStarted = false;
       this.intervalID = null;
       this.speed = 5;
+      this.fuel = 100;
       this.refillGas = []; // variavel para gerar refil de gasolina randomicamente
     };
 
@@ -36,6 +37,12 @@ window.onload = () => {
       this.context.fillText(`Score: ${this.points}`, 65, 65);
       this.context.strokeStyle = 'black';
       this.context.fillText(`Score: ${this.points}`, 65, 65);
+      this.context.fillStyle = "white";
+      this.context.font = "bold 30px courier";
+      this.context.fillText(`Fuel: ${this.fuel}`, 65, 100);
+      this.context.strokeStyle = 'black';
+      this.context.fillText(`Fuel: ${this.fuel}`, 65, 100);
+
     };
 
     gameOver = () => {
@@ -54,12 +61,14 @@ window.onload = () => {
       clearInterval(this.intervalID);
       this.points = 0;
       this.obstacles = [];
+      this.fuel = 100;
       this.clear();
       this.start();
   };
 
   increaseSpeedUp = () => {
   this.speed += 1;
+  this.fuel -= 5;
  }
 };
   const gameArea = new GameArea();
@@ -91,7 +100,7 @@ window.onload = () => {
 
 function updateBackgroundCanvas() {
   background.move();
-  gameArea.clear();
+  //gameArea.clear();
   background.draw();
  }
 
@@ -108,8 +117,9 @@ function updateBackgroundCanvas() {
       this.speed = 100;
       this.resetPosX = x;
       this.resetPosY = y;
-      //this.fuel = 10; // fueel variable to use in the future
+      this.fuel = 100;
     }
+
 
     draw = () => {
       gameArea.context.drawImage(
@@ -179,23 +189,24 @@ function updateBackgroundCanvas() {
   const player1 = new Car(470, 450, 60, 120);
 
   class Obstacle {
-    constructor(x, width, color, speed) {
+    constructor(x, width, speed) {
       this.posX = x;
-      this.posY = -40;
+      this.posY = -121;
       this.width = width;
-      this.height = 40;
+      this.height = 120;
       this.speed = speed;
-      this.color = color;
+      this.img = new Image();
+      this.cars = ["./images/f1Car.png", "./images/yellowCar.png", "./images/graycar.png",]
+      this.img.src = this.cars[Math.floor(Math.random() * this.cars.length)];
     }
 
     draw = () => {
-      gameArea.context.fillStyle = this.color;
-      gameArea.context.fillRect(
+      gameArea.context.drawImage(
+        this.img,
         this.posX,
         this.posY,
         this.width,
-        this.height,
-        this.color
+        this.height
       );
     };
     updatePos = () => {
@@ -224,7 +235,7 @@ function updateBackgroundCanvas() {
     player1.reset();
   }
   function updateGameArea() {
-    //gameArea.clear();
+    gameArea.clear();
     //background.draw();
     updateBackgroundCanvas();
     updateObstacles();
@@ -234,13 +245,10 @@ function updateBackgroundCanvas() {
   }
 
   function createObstacle() {
-    const minX = 60;
     const maxX = gameArea.canvas.width - 60;
-    const minWidth = 120;
-    const maxWidth = 260;
-    const posX = Math.floor(Math.random() * (maxX - minX + 1) + minX);
-    const width = Math.floor(Math.random() * (maxWidth - minWidth + 1) + minWidth);
-    const obs = new Obstacle(posX, width, 'red', gameArea.speed);
+    const posX = Math.floor(Math.random() * maxX);
+    const width = 60;
+    const obs = new Obstacle(posX, width, gameArea.speed);
     gameArea.obstacles.push(obs);
   }
 
@@ -256,7 +264,8 @@ function updateBackgroundCanvas() {
       if (obstacle.posY > gameArea.canvas.height) {
         gameArea.obstacles.splice(index, 1);
         gameArea.points += 1;
-        if (!(gameArea.points % 3))
+        //gameArea.fuel -= 1;
+        if (!(gameArea.points % 10))
           gameArea.increaseSpeedUp();
       }
     });
@@ -265,7 +274,8 @@ function updateBackgroundCanvas() {
   function checkGameOver() {
     gameArea.obstacles.forEach((obstacle) => {
       const crashed = player1.crashWith(obstacle);
-      if (crashed) {
+      if (crashed || gameArea.fuel === 0) {
+        console.log('run of gas!')
         gameArea.stop();
       }
     })
