@@ -64,13 +64,13 @@ window.onload = () => {
       this.fuel = 100;
       this.clear();
       this.start();
-  };
+    };
 
-  increaseSpeedUp = () => {
-  this.speed += 1;
-  this.fuel -= 5;
- }
-};
+    increaseSpeedUp = () => {
+      this.speed += 1;
+      this.fuel -= 5;
+    }
+  };
   const gameArea = new GameArea();
 
   class Background {
@@ -98,11 +98,10 @@ window.onload = () => {
     };
   }
 
-function updateBackgroundCanvas() {
-  background.move();
-  //gameArea.clear();
-  background.draw();
- }
+  function updateBackgroundCanvas() {
+    background.move();
+    background.draw();
+  }
 
   const background = new Background();
 
@@ -186,7 +185,7 @@ function updateBackgroundCanvas() {
       this.height = 120;
       this.speed = speed;
       this.img = new Image();
-      this.cars = ["./images/f1Car.png", "./images/yellowCar.png", "./images/graycar.png",]
+      this.cars = ["./images/f1Car.png", "./images/yellowCar.png", "./images/grayCar.png", "./images/grayCar.png", "./images/lamboCar.png"]
       this.img.src = this.cars[Math.floor(Math.random() * this.cars.length)];
     }
 
@@ -220,17 +219,58 @@ function updateBackgroundCanvas() {
     }
   }
 
-  function resetAll () {
+  class RefillGas {
+    constructor(x, width, speed) {
+      this.posX = x;
+      this.posY = -121;
+      this.width = width;
+      this.height = 20;
+      this.speed = speed;
+      this.img = new Image();
+      this.img.src = ["./images/refillGas.png"];
+    }
+    draw = () => {
+      gameArea.context.drawImage(
+        this.img,
+        this.posX,
+        this.posY,
+        this.width,
+        this.height
+      );
+    }
+    updatePos = () => {
+      this.posY += this.speed;
+    };
+
+    top = () => {
+      return this.posY;
+    }
+
+    bottom = () => {
+      return this.posY + this.height;
+    }
+
+    left = () => {
+      return this.posX;
+    }
+
+    right = () => {
+      return this.posX + this.width;
+    }
+  }
+
+  function resetAll() {
     gameArea.reset();
     player1.reset();
   }
+
   function updateGameArea() {
     gameArea.clear();
-    //background.draw();
     updateBackgroundCanvas();
     updateObstacles();
     player1.draw();
     gameArea.score();
+    fillGas();
     checkGameOver();
   }
 
@@ -239,26 +279,51 @@ function updateBackgroundCanvas() {
     const posX = Math.floor(Math.random() * maxX);
     const width = 60;
     const obs = new Obstacle(posX, width, gameArea.speed);
+    const fuelGas = new RefillGas(posX, width, gameArea.speed)
     gameArea.obstacles.push(obs);
+  }
+
+  function createFuel() {
+    const maxX = gameArea.canvas.width - 60;
+    const posX = Math.floor(Math.random() * maxX);
+    const width = 30;
+    const fuelGas = new RefillGas(posX, width, gameArea.speed)
+    gameArea.refillGas.push(fuelGas);
   }
 
   function updateObstacles() {
     gameArea.frames += 1;
     if (!(gameArea.frames % 60)) {
       createObstacle();
+
     }
 
+    if (!(gameArea.frames % 360)) {
+      createFuel();
+
+    }
     gameArea.obstacles.forEach((obstacle, index) => {
       obstacle.updatePos();
       obstacle.draw();
+      
+
       if (obstacle.posY > gameArea.canvas.height) {
         gameArea.obstacles.splice(index, 1);
         gameArea.points += 1;
-        //gameArea.fuel -= 1;
         if (!(gameArea.points % 10))
           gameArea.increaseSpeedUp();
       }
     });
+
+    gameArea.refillGas.forEach((fuel, index) => {
+      fuel.updatePos();
+      fuel.draw();
+
+      if (fuel.posY > gameArea.canvas.height) {
+        gameArea.refillGas.splice(index, 1);
+      }
+    });
+      
   }
 
   function checkGameOver() {
@@ -271,6 +336,15 @@ function updateBackgroundCanvas() {
     })
   }
 
+  function fillGas() {
+    gameArea.refillGas.forEach((gas) => {
+      const bottle = player1.crashWith(gas);
+      if (bottle) {
+        console.log('refill gas')
+        gameArea.fuel += 1;
+      }
+    })
+  }
 
   document.getElementById('start-button').onclick = () => {
     if (!gameArea.gameStarted) {
