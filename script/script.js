@@ -34,29 +34,51 @@ window.onload = () => {
 
     score = () => {
       this.context.fillStyle = "white";
-      this.context.font = "bold 30px courier";
-      this.context.fillText(`Score: ${this.points}`, 65, 65);
+      this.context.font = "bold 30px arial";
+      this.context.fillText(`Score: ${this.points}`, 100, 65);
       this.context.strokeStyle = 'black';
-      this.context.fillText(`Score: ${this.points}`, 65, 65);
+      this.context.fillText(`Score: ${this.points}`, 100, 65);
       this.context.fillStyle = "white";
-      this.context.font = "bold 30px courier";
-      this.context.fillText(`Fuel: ${this.fuel}`, 65, 100);
+      this.context.font = "bold 30px arial";
+      this.context.fillText(`Fuel: ${this.fuel}`, 100, 100);
       this.context.strokeStyle = 'black';
-      this.context.fillText(`Fuel: ${this.fuel}`, 65, 100);
-
-    };
+      this.context.fillText(`Fuel: ${this.fuel}`, 100, 100);
+    }
 
     gameOver = () => {
       this.clear();
-      this.context.fillStyle = 'black';
+      this.context.fillStyle = 'white';
       this.context.fillRect(0, 0, this.canvas.width, this.canvas.height)
       this.context.fillStyle = 'red';
       this.context.textAlign = 'center';
-      this.context.font = 'bold 60px courier';
-      this.context.fillText('GAME OVER', 450, 250);
-      this.context.fillStyle = 'white';
+      this.context.font = 'bold 60px arial';
+      this.context.fillText('GAME OVER', 450, 200);
+      this.context.fillStyle = 'black';
       this.context.font = 'bold 40px courier';
-      this.context.fillText(`Score: ${this.points}`, 450, 350)
+      this.context.fillText(`Score: ${this.points}`, 450, 300);
+      this.context.textAlign = 'center';
+      this.context.font = 'bold 30px courier';
+      this.context.fillText('Play again, select your car ->', 450, 350);
+
+      if (this.points >= 1  && this.points <= 10) {  
+      this.context.textAlign = 'center';
+      this.context.font = 'bold 30px courier';
+      this.context.fillText('You did good, but can be better', 450, 450);
+      } else if (this.points > 10  && this.points <= 50) {
+        this.context.textAlign = 'center';
+      this.context.font = 'bold 30px courier';
+      this.context.fillText(`You're really good, can You be better?`, 450, 450);
+      } else if (this.points > 50 && this.points <=100){
+        this.context.textAlign = 'center';
+      this.context.font = 'bold 30px courier';
+      this.context.fillText(`You're master!! Let's see if You can be a King`, 450, 450);
+      } else if (this.points > 100) {
+        this.context.fillStyle = 'gold';
+        this.context.textAlign = 'center';
+      this.context.font = 'bold 50px courier';
+      this.context.fillText(`You're K I N G ! ! ! `, 450, 450);
+      }
+
     };
     reset = () => {
       clearInterval(this.intervalID);

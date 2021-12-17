@@ -6,23 +6,32 @@
 body {
     margin: 0;
     padding: 0;
+}
 
+h2 {
+    background-color: rgb(3, 3, 44);
+    color: white;
+    padding: 50px 0px;
+    margin-right: 20px;
 }
 
 .game-intro {
-    float: left;
+    float: right;
     padding: 0 0;
     text-align: center;
+    margin-top: 50px;
 
 }
 
 .game-intro p {
     font-size: 18px;
-    font-family: "Verdana"
+    font-family: "Verdana";
+    margin: 10px 5px 10px 0px
 }
 
 .logo-img {
     width: 350px;
+    margin: 50 px;
 }
 
 .arrows-img {
@@ -31,22 +40,25 @@ body {
 
 body button {
     font-size: 30px;
-    background-color: #870007;
-    color: #fff;
+    border: 1px solid black;
+    background-color: white;
     padding: 20px 40px;
-    border: 0;
     box-shadow: 0;
     border-radius: 5px;
-    margin-bottom: 20px;
+    margin: 20px;
+
 }
 
 #game-board {
-    float: right;
+    float: left;
     padding: 0px 0px;
     background-image: '../images/roadBlack.png';
+    margin-left: 20px;
+    margin-top: 10px;
 }
 
 #canvas {
+    background-color: black;
     border: 1px solid red;
     margin: 0;
 }
