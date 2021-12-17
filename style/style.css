@@ -1,12 +1,19 @@
-body {
+* {
+    margin: 0;
     padding: 0;
-    text-align: center;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+
 }
 
 .game-intro {
-    display: flex;
-    align-items: center;
-    padding: 0% 10%;
+    float: left;
+    padding: 0 0;
+    text-align: center;
+
 }
 
 .game-intro p {
@@ -34,10 +41,12 @@ body button {
 }
 
 #game-board {
-    padding: 20px 0px;
+    float: right;
+    padding: 0px 0px;
     background-image: '../images/roadBlack.png';
 }
 
 #canvas {
     border: 1px solid red;
+    margin: 0;
 }

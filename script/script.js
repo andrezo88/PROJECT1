@@ -18,8 +18,9 @@ window.onload = () => {
     start = () => {
       this.gameStarted = true;
       this.intervalID = setInterval(updateGameArea, 20);
-
-      document.getElementById('start-button').innerText = "Try Again";
+      let text = "try again";
+      document.getElementById('start-lambo').appendChild(text);
+      document.getElementById('start-f1Car').appendChild(text);
     };
 
     stop = () => {
@@ -86,10 +87,6 @@ window.onload = () => {
       this.y %= gameArea.canvas.height;
     }
 
-    /* clear = () => {
-      this.context.clearRect(0, 0, gameArea.canvas.width, gameArea.canvas.height);
-    }; */
-
     draw = () => {
       gameArea.context.drawImage(
         this.img,
@@ -103,19 +100,14 @@ window.onload = () => {
     if (this.speed < 0) {
       gameArea.context.drawImage(this.img, 0, this.y + this.img.height, gameArea.canvas.width, gameArea.canvas.height);
     } else {
-      gameArea.context.drawImage(this.img, 0, this.y - background.height, gameArea.canvas.width, gameArea.canvas.height);
+      gameArea.context.drawImage(this.img, 0, this.y - gameArea.canvas.height, gameArea.canvas.width, gameArea.canvas.height);
     }
-
-      /* gameArea.context.drawImage(this.img, 0, this.y, gameArea.canvas.width, gameArea.canvas.height);
-      gameArea.context.drawImage(this.img, 0, this.y + gameArea.canvas.height, gameArea.canvas.width, gameArea.canvas.height);
-    console.log(this.y); */
     };
   }
 
   function updateBackgroundCanvas() {
     background.move();
     background.draw();
-    console.log(background.y)
   }
 
   const background = new Background();
@@ -128,7 +120,7 @@ window.onload = () => {
       this.height = height;
       this.img = new Image();
       this.img.src = "./images/lamboCar.png";
-      this.speed = 100;
+      this.speed = 50;
       this.resetPosX = x;
       this.resetPosY = y;
       this.fuel = 100;
@@ -148,12 +140,12 @@ window.onload = () => {
     move = (command) => {
       switch (command) {
         case "ArrowLeft":
-          if (this.posX > 100) {
+          if (this.posX > 60) {
             this.posX -= this.speed;
           }
           break;
         case "ArrowRight":
-          if (this.posX < gameArea.canvas.width - 100 - this.width) {
+          if (this.posX < gameArea.canvas.width - 60 - this.width) {
             this.posX += this.speed;
           }
           break;
@@ -190,8 +182,78 @@ window.onload = () => {
     };
   }
 
-  const player1 = new Car(470, 450, 60, 120);
+  class Car2 {
+    constructor(x, y, width, height) {
+      this.posX = x;
+      this.posY = y;
+      this.width = width;
+      this.height = height;
+      this.img = new Image();
+      this.img.src = "./images/f1Car.png";
+      this.speed = 50;
+      this.resetPosX = x;
+      this.resetPosY = y;
+      this.fuel = 100;
+    }
 
+
+    draw = () => {
+      gameArea.context.drawImage(
+        this.img,
+        this.posX,
+        this.posY,
+        this.width,
+        this.height
+      );
+    };
+
+    move = (command) => {
+      switch (command) {
+        case "ArrowLeft":
+          if (this.posX > 60) {
+            this.posX -= this.speed;
+          }
+          break;
+        case "ArrowRight":
+          if (this.posX < gameArea.canvas.width - 60 - this.width) {
+            this.posX += this.speed;
+          }
+          break;
+      };
+    };
+
+    reset = () => {
+      this.posX = this.resetPosX;
+      this.posY = this.resetPosY;
+    }
+
+    top = () => {
+      return this.posY;
+    }
+
+    bottom = () => {
+      return this.posY + this.height;
+    }
+
+    left = () => {
+      return this.posX;
+    }
+
+    right = () => {
+      return this.posX + this.width;
+    }
+
+    crashWith = (obstacle) => {
+      const freeLeft = this.left() > obstacle.right();
+      const freeRight = this.right() < obstacle.left();
+      const freeTop = this.top() > obstacle.bottom();
+      const freeBottom = this.bottom() < obstacle.top();
+      return !(freeLeft || freeRight || freeTop || freeBottom);
+    };
+  }
+  
+  let carSelect = "";
+  
   class Obstacle {
     constructor(x, width, speed) {
       this.posX = x;
@@ -276,21 +338,20 @@ window.onload = () => {
 
   function resetAll() {
     gameArea.reset();
-    player1.reset();
+    carSelect.reset();
   }
 
   function updateGameArea() {
     gameArea.clear();
     updateBackgroundCanvas();
     updateObstacles();
-    player1.draw();
+    carSelect.draw();
     gameArea.score();
     fillGas();
     checkGameOver();
   }
 
-  function createObstacle() {
-    //const minX = 120 - gameArea.canvas.width;
+    function createObstacle() {
     const maxX = gameArea.canvas.width - 120;
     const posX = Math.floor(Math.random() * maxX);
     const width = 60;
@@ -330,7 +391,7 @@ window.onload = () => {
       }
     });
 
-    gameArea.refillGas.forEach((fuel, index) => {
+    gameArea.refillGas.forEach((fuel) => {
       fuel.updatePos();
       fuel.draw();
     });
@@ -339,9 +400,9 @@ window.onload = () => {
 
   function checkGameOver() {
     gameArea.obstacles.forEach((obstacle) => {
-      const crashed = player1.crashWith(obstacle);
+      const crashed = carSelect.crashWith(obstacle);
       if (crashed || gameArea.fuel === 0) {
-        console.log('run of gas!')
+        
         gameArea.stop();
       }
     })
@@ -349,16 +410,26 @@ window.onload = () => {
 
   function fillGas() {
     gameArea.refillGas.forEach((gas, index) => {
-      const bottle = player1.crashWith(gas);
+      const bottle = carSelect.crashWith(gas);
       if (bottle) {
-        console.log('refill gas')
         gameArea.refillGas.splice(index, 1);
         gameArea.fuel += 1;
       }
     })
   }
 
-  document.getElementById('start-button').onclick = () => {
+
+  
+  document.getElementById('start-lambo').onclick = () => {
+    carSelect = new Car(420, 450, 60, 120);
+    if (!gameArea.gameStarted) {
+      gameArea.start(); 
+    } else {
+      resetAll();
+    }
+  };
+  document.getElementById('start-f1Car').onclick = () => {
+    carSelect = new Car2(420, 450, 60, 120);
     if (!gameArea.gameStarted) {
       gameArea.start();
     } else {
@@ -366,6 +437,6 @@ window.onload = () => {
     }
   };
   document.addEventListener('keydown', (e) => {
-    player1.move(e.key);
+    carSelect.move(e.key);
   });
 };
